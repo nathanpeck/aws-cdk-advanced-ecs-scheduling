@@ -1,9 +1,6 @@
 {
   "name": "advanced-scheduling",
   "version": "0.1.0",
-  "bin": {
-    "advanced-scheduling": "bin/advanced-scheduling.js"
-  },
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
@@ -21,6 +18,9 @@
     "typescript": "~3.7.2"
   },
   "dependencies": {
+    "@aws-cdk/aws-ec2": "^1.16.3",
+    "@aws-cdk/aws-ecs": "^1.16.3",
+    "@aws-cdk/aws-ecs-patterns": "^1.16.3",
     "@aws-cdk/core": "^1.16.3",
     "source-map-support": "^0.5.16"
   }
