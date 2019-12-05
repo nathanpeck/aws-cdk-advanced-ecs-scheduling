@@ -16,14 +16,8 @@ const cluster = new ecs.Cluster(stack, "MyCluster", {
 });
 
 cluster.addCapacity('small-instances', {
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
   desiredCapacity: 3
-});
-
-cluster.addCapacity('gpu-instances', {
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.G3, ec2.InstanceSize.XLARGE4),
-  machineImage: new ecs.EcsOptimizedAmi({ hardwareType: ecs.AmiHardwareType.GPU }),
-  desiredCapacity: 2
 });
 
 ///////////////////////////////////////////////////////////////
@@ -49,23 +43,34 @@ const webService = new ecs.Ec2Service(stack, 'web-service', {
 });
 
 // Randomly distribute the tasks
-//service.placeRandomly();
+webService.addPlacementStrategies(
+  ecs.PlacementStrategy.randomly()
+);
 
 // Distribute the tasks evenly across availability zones
-/*service.addPlacementStrategies(
+/*
+webService.addPlacementStrategies(
   ecs.PlacementStrategy.spreadAcross(ecs.BuiltInAttributes.AVAILABILITY_ZONE)
-);*/
+);
 
 // Spread across AZ's but also binpack on CPU
 webService.addPlacementStrategies(
   ecs.PlacementStrategy.packedBy(ecs.BinPackResource.MEMORY),
   ecs.PlacementStrategy.spreadAcross(ecs.BuiltInAttributes.AVAILABILITY_ZONE)
 );
+*/
 
 ///////////////////////////////////////////////////////////////
 // A basic GPU service
 ///////////////////////////////////////////////////////////////
-/*const gpuTaskDefinition = new ecs.Ec2TaskDefinition(stack, 'gpu-task');
+/*
+cluster.addCapacity('gpu-instances', {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.G3, ec2.InstanceSize.XLARGE4),
+  machineImage: new ecs.EcsOptimizedAmi({ hardwareType: ecs.AmiHardwareType.GPU }),
+  desiredCapacity: 2
+});
+
+const gpuTaskDefinition = new ecs.Ec2TaskDefinition(stack, 'gpu-task');
 
 const gpuContainer = gpuTaskDefinition.addContainer('gpu', {
   essential: true,
@@ -85,13 +90,13 @@ const gpuContainer = gpuTaskDefinition.addContainer('gpu', {
 const gpuService = new ecs.Ec2Service(stack, 'gpu-service', {
   cluster,
   taskDefinition: gpuTaskDefinition
-});*/
-
+});
+*/
 
 ////////////////////////////////////////////////////////////////
 // Ordered container service
 ////////////////////////////////////////////////////////////////
-const orderedTaskDefinition = new ecs.Ec2TaskDefinition(stack, 'ordered-task', {
+/*const orderedTaskDefinition = new ecs.Ec2TaskDefinition(stack, 'ordered-task', {
   networkMode: ecs.NetworkMode.AWS_VPC
 });
 
@@ -161,6 +166,6 @@ const orderedDependencyService = new ecs.Ec2Service(stack, 'dependency-service',
   cluster,
   taskDefinition: orderedTaskDefinition
 });
-
+*/
 
 app.synth();
